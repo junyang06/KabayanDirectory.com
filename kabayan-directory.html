@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kabayan Directory</title>
+<style>
+/* ============================================================
+   1. DESIGN TOKENS
+   ============================================================ */
+:root{
+  --paper:#FBF7EF;
+  --ink:#1F2A24;
+  --green:#2F5D45;
+  --green-deep:#1C3B2B;
+  --gold:#C68A2E;
+  --gold-soft:#EAD7AE;
+  --line:#D8CDB4;
+  --red:#A33B2A;
+  --white:#FFFFFF;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Segoe UI', Roboto, Arial, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:720px;margin:0 auto;padding:0 18px 60px;}
+
+/* ============================================================
+   2. HEADER / HERO
+   ============================================================ */
+header.hero{
+  background:linear-gradient(160deg,var(--green-deep),var(--green));
+  color:var(--paper);
+  padding:34px 18px 28px;
+  border-radius:0 0 28px 28px;
+  margin-bottom:18px;
+}
+header.hero .wrap{padding:0;}
+.brand-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.brand-mark{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;color:var(--green-deep);font-size:18px;flex-shrink:0;
+}
+.brand-name{font-size:14px;letter-spacing:.08em;text-transform:uppercase;opacity:.85;}
+h1{
+  font-family:'Georgia', 'Times New Roman', serif;
+  font-size:30px;
+  line-height:1.15;
+  margin:0 0 8px;
+}
+.tagline{font-size:15px;opacity:.9;margin:0 0 18px;max-width:480px;}
+.stats-row{display:flex;gap:10px;flex-wrap:wrap;}
+.stat-pill{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:999px;
+  padding:6px 13px;
+  font-size:12.5px;
+}
+.stat-pill b{color:var(--gold-soft);}
+
+/* ============================================================
+   3. SHARED PANEL / FORM ELEMENTS
+   ============================================================ */
+.panel{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:16px;
+}
+.panel h2{
+  font-family:'Georgia', serif;
+  font-size:17px;
+  margin:0 0 12px;
+  color:var(--green-deep);
+}
+label{display:block;font-size:13px;font-weight:600;color:#4a4438;margin:12px 0 5px;}
+label:first-of-type{margin-top:0;}
+input[type=text], input[type=tel], input[type=password], textarea, select.form-input{
+  width:100%;padding:11px 12px;border-radius:9px;
+  border:1.5px solid var(--line);background:var(--paper);
+  font-size:14.5px;color:var(--ink);font-family:inherit;
+}
+textarea{resize:vertical;min-height:60px;}
+.form-note{font-size:12px;color:#8a8270;margin-top:8px;line-height:1.5;}
+.submit-btn{
+  width:100%;margin-top:16px;padding:13px;border-radius:10px;border:none;
+  background:var(--gold);color:var(--green-deep);font-weight:800;font-size:15px;cursor:pointer;
+}
+.submit-btn:disabled{opacity:.5;}
+.submit-toggle{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--green-deep);color:var(--white);
+  border:none;border-radius:12px;padding:14px;
+  font-size:15px;font-weight:700;width:100%;cursor:pointer;
+  margin-bottom:18px;
+}
+
+/* ============================================================
+   4. SEARCH + FILTERS
+   ============================================================ */
+.search-box{
+  display:flex;align-items:center;gap:8px;
+  background:var(--paper);border:1.5px solid var(--line);border-radius:11px;
+  padding:11px 14px;margin-bottom:12px;
+}
+.search-box input{border:none;background:transparent;outline:none;font-size:15px;width:100%;color:var(--ink);}
+.search-box svg{flex-shrink:0;opacity:.55;}
+
+.filter-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:4px;}
+.filter-row::-webkit-scrollbar{display:none;}
+.filter-row-wrap{position:relative;}
+.filter-row-wrap.has-overflow::after{
+  content:'';position:absolute;top:0;right:0;bottom:4px;width:28px;
+  background:linear-gradient(to right, rgba(255,255,255,0), var(--white));
+  pointer-events:none;
+}
+.chip{
+  flex-shrink:0;padding:8px 14px;border-radius:999px;
+  border:1.5px solid var(--line);background:var(--white);
+  font-size:13.5px;color:var(--ink);cursor:pointer;white-space:nowrap;transition:.15s;
+}
+.chip.active{background:var(--green);border-color:var(--green);color:var(--white);font-weight:600;}
+
+select.city-select{
+  margin-top:10px;width:100%;padding:11px 12px;border-radius:10px;
+  border:1.5px solid var(--line);background:var(--paper);font-size:14.5px;color:var(--ink);
+}
+
+/* ============================================================
+   5. LISTING CARDS
+   ============================================================ */
+.results-meta{font-size:13px;color:#6b6354;margin:4px 2px 10px;}
+.card{
+  background:var(--white);border:1px solid var(--line);border-left:4px solid var(--gold);
+  border-radius:12px;padding:14px 16px;margin-bottom:10px;
+}
+.card.is-featured{
+  border-left-color:#B8860B;
+  background:linear-gradient(180deg,#FFFBF0,var(--white));
+  box-shadow:0 2px 10px rgba(198,138,46,.15);
+}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.card-name{font-weight:700;font-size:16px;color:var(--green-deep);margin:0 0 2px;}
+.card-cat{
+  display:inline-block;font-size:11.5px;background:var(--gold-soft);color:#6b4c14;
+  border-radius:6px;padding:2px 8px;margin-bottom:6px;font-weight:600;
+}
+.featured-badge{
+  display:inline-block;background:var(--gold);color:var(--green-deep);
+  font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;margin-bottom:6px;margin-left:6px;
+}
+.card-detail{font-size:13.5px;color:#4a4438;margin:3px 0;display:flex;gap:6px;align-items:flex-start;}
+.card-detail .ico{flex-shrink:0;opacity:.7;}
+.card-langs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.lang-tag{font-size:11px;background:#EEF3EC;color:var(--green-deep);border-radius:6px;padding:3px 7px;font-weight:600;}
+.card-photos{display:flex;gap:6px;margin-top:8px;overflow-x:auto;}
+.card-photos img{width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1px solid var(--line);}
+.card-actions{display:flex;gap:8px;margin-top:10px;}
+.btn-sm{
+  flex:1;text-align:center;padding:9px 0;border-radius:9px;
+  font-size:13.5px;font-weight:600;text-decoration:none;border:none;cursor:pointer;
+}
+.btn-call{background:var(--green);color:var(--white);}
+.btn-verify{background:transparent;border:1.5px solid var(--line);color:#6b6354;}
+.btn-verify.verified-by-me{background:var(--gold-soft);border-color:var(--gold);color:#6b4c14;font-weight:700;}
+.verify-count{font-size:11px;color:#8a8270;margin-top:4px;}
+
+.empty-state{text-align:center;padding:34px 16px;color:#6b6354;}
+.empty-state .big{font-size:32px;margin-bottom:8px;}
+
+.loading-state{padding:8px 2px;}
+.skeleton-card{
+  background:var(--white);border:1px solid var(--line);border-left:4px solid var(--line);
+  border-radius:12px;padding:14px 16px;margin-bottom:10px;
+}
+.skel-line{
+  height:12px;border-radius:6px;
+  background:linear-gradient(90deg, var(--line) 0%, #ECE3CC 50%, var(--line) 100%);
+  background-size:200% 100%;
+  animation:skel-shimmer 1.3s ease-in-out infinite;
+  margin-bottom:8px;
+}
+.skel-line.w-40{width:40%;height:10px;}
+.skel-line.w-70{width:70%;height:15px;}
+.skel-line.w-55{width:55%;}
+.skel-line.w-30{width:30%;margin-bottom:0;}
+@keyframes skel-shimmer{
+  0%{background-position:200% 0;}
+  100%{background-position:-200% 0;}
+}
+
+/* ============================================================
+   6. COMMENTS
+   ============================================================ */
+.comments-toggle{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#EEF3EC;border:1.5px solid var(--line);color:var(--green-deep);
+  font-size:12.5px;font-weight:700;
+  cursor:pointer;padding:8px 14px;margin-top:10px;
+  border-radius:999px;
+}
+.comments-toggle:active{background:var(--green);color:var(--white);}
+.comments-section{display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:10px;}
+.comments-section.open{display:block;}
+.comment-item{background:var(--paper);border-radius:8px;padding:8px 10px;margin-bottom:6px;}
+.comment-author{font-size:12px;font-weight:700;color:var(--green-deep);margin-bottom:1px;}
+.comment-text{font-size:13px;color:#4a4438;line-height:1.4;}
+.comment-time{font-size:10.5px;color:#9a9282;margin-top:2px;}
+.comment-delete{
+  background:none;border:none;color:var(--red);font-size:11px;font-weight:700;
+  cursor:pointer;padding:0;margin-top:4px;
+}
+.comment-empty{font-size:12.5px;color:#9a9282;font-style:italic;margin-bottom:8px;}
+.comment-form{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.comment-form input[type=text]{flex:1 1 100%;padding:8px 10px;font-size:13px;border-radius:8px;border:1.5px solid var(--line);background:var(--white);}
+.comment-form textarea.comment-msg{flex:1 1 100%;padding:8px 10px;font-size:13px;border-radius:8px;border:1.5px solid var(--line);background:var(--white);min-height:44px;font-family:inherit;resize:vertical;}
+.comment-form button{
+  padding:8px 16px;border-radius:8px;border:none;background:var(--gold);
+  color:var(--green-deep);font-weight:700;font-size:13px;cursor:pointer;
+}
+
+/* ============================================================
+   7. ADD-LISTING FORM
+   ============================================================ */
+form.add-form{display:none;}
+form.add-form.open{display:block;}
+.lang-check-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.lang-check{
+  border:1.5px solid var(--line);border-radius:8px;padding:7px 12px;
+  font-size:13px;cursor:pointer;background:var(--white);
+}
+.lang-check.checked{background:var(--green);color:var(--white);border-color:var(--green);}
+
+/* ============================================================
+   8. ADMIN / CRM PANEL
+   ============================================================ */
+.crm-item{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;}
+.crm-top{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.crm-name{font-weight:700;font-size:14.5px;color:var(--green-deep);}
+.crm-contact{font-size:13px;color:#4a4438;margin-top:4px;}
+.crm-toggle-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.crm-switch{
+  position:relative;width:42px;height:23px;border-radius:999px;
+  background:var(--line);cursor:pointer;transition:.2s;flex-shrink:0;
+}
+.crm-switch.on{background:var(--gold);}
+.crm-switch::after{
+  content:'';position:absolute;top:2px;left:2px;width:19px;height:19px;
+  border-radius:50%;background:var(--white);transition:.2s;
+}
+.crm-switch.on::after{left:21px;}
+.crm-switch-label{font-size:12.5px;font-weight:600;color:#4a4438;}
+.crm-photo-input{margin-top:8px;}
+.crm-photo-input input{width:100%;font-size:12.5px;padding:7px 9px;border-radius:7px;border:1.5px solid var(--line);}
+.backup-row{display:flex;gap:8px;margin-top:4px;}
+.backup-row .btn-sm{flex:1;}
+.btn-export{background:var(--green);color:var(--white);}
+.btn-import{background:transparent;border:1.5px solid var(--line);color:#4a4438;}
+
+/* ============================================================
+   9. MISC (toast, footer)
+   ============================================================ */
+.toast{
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  background:var(--green-deep);color:var(--white);padding:12px 22px;
+  border-radius:999px;font-size:14px;font-weight:600;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+  opacity:0;transition:opacity .3s, transform .3s;pointer-events:none;
+  z-index:50;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+footer{text-align:center;font-size:12px;color:#9a9282;padding:10px 0 4px;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand-row">
+      <div class="brand-mark">K</div>
+      <div class="brand-name">Kabayan Directory</div>
+    </div>
+    <h1>Trusted people and places,<br>all in one list.</h1>
+    <p class="tagline">Doctors, dentists, remittance, Filipino stores, and more — find them here, no hassle.</p>
+    <div class="stats-row" id="statsRow"></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- SEARCH + FILTERS -->
+  <div class="panel">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchInput" type="text" placeholder="Search name, service, area...">
+    </div>
+    <div class="filter-row-wrap">
+      <div class="filter-row" id="categoryFilters"></div>
+    </div>
+    <select class="city-select" id="cityFilter"></select>
+  </div>
+
+  <!-- LISTINGS -->
+  <div class="results-meta" id="resultsMeta"></div>
+  <div id="listings"></div>
+
+  <!-- ADMIN UNLOCK -->
+  <button class="submit-toggle" id="toggleFormBtn">+ Add a Listing (Admin Only)</button>
+
+  <div class="panel" id="pinPanel" style="display:none;">
+    <h2>Admin Access</h2>
+    <div class="search-box" style="margin-bottom:10px;">
+      <input id="pinInput" type="password" placeholder="Enter admin PIN" inputmode="numeric">
+    </div>
+    <button class="submit-btn" id="pinSubmitBtn" type="button">Unlock</button>
+    <p class="form-note" id="pinError" style="color:#A33B2A; display:none;">Incorrect PIN. Try again.</p>
+  </div>
+
+  <!-- ADD LISTING FORM (admin only) -->
+  <div class="panel" id="formPanel" style="display:none;">
+    <h2>Add a Trusted Listing</h2>
+    <form class="add-form open" id="addForm">
+      <label>Name of person/business *</label>
+      <input type="text" id="f_name" required placeholder="e.g. Dr. Kim Family Clinic">
+
+      <label>Category *</label>
+      <select class="form-input" id="f_category" required></select>
+
+      <label>City / Area *</label>
+      <input type="text" id="f_city" required placeholder="e.g. Ansan">
+
+      <label>Address (optional)</label>
+      <input type="text" id="f_address" placeholder="e.g. Wongok-dong, Danwon-gu">
+
+      <label>Contact number (optional)</label>
+      <input type="tel" id="f_phone" placeholder="e.g. 010-1234-5678">
+
+      <label>Languages spoken *</label>
+      <div class="lang-check-row" id="langChecks"></div>
+
+      <label>Note / why you trust them (optional)</label>
+      <textarea id="f_note" placeholder="e.g. Kind staff, English-speaking, affordable"></textarea>
+
+      <label>Owner contact for billing/CRM (private, admin-only) — phone or email</label>
+      <input type="text" id="f_ownerContact" placeholder="e.g. 010-1234-5678 or owner@email.com">
+
+      <button type="submit" class="submit-btn">Submit Listing</button>
+      <p class="form-note">All listings are visible to the whole community. Please make sure the info is correct before submitting.</p>
+    </form>
+  </div>
+
+  <!-- CRM / FEATURED MANAGEMENT (admin only) -->
+  <button class="submit-toggle" id="toggleCrmBtn" style="display:none; background:var(--gold); color:var(--green-deep);">📋 Manage Featured / CRM</button>
+
+  <div class="panel" id="crmPanel" style="display:none;">
+    <h2>Featured Listings & Billing Contacts</h2>
+    <div id="crmList"></div>
+  </div>
+
+  <!-- DATA BACKUP (admin only) -->
+  <div class="panel" id="backupPanel" style="display:none;">
+    <h2>Backup &amp; Restore</h2>
+    <p class="form-note">Download a copy of all listings and comments as a backup file. If anything ever gets lost or reset, you can restore from this file.</p>
+    <div class="backup-row">
+      <button class="btn-sm btn-export" id="exportBtn" type="button">⬇ Export Backup</button>
+      <button class="btn-sm btn-import" id="importTriggerBtn" type="button">⬆ Restore from File</button>
+    </div>
+    <input type="file" id="importFileInput" accept=".json" style="display:none;">
+  </div>
+
+  <footer>Made for the Filipino community in Korea 🇵🇭🇰🇷 — community-sourced, please verify before relying fully.</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   SECTION A — STATIC CONFIG / CONSTANTS
+   ============================================================ */
+const CATEGORIES = [
+  {id:'clinic', label:'🏥 Clinic/Doctor'},
+  {id:'remit', label:'💸 Remittance'},
+  {id:'store', label:'🛍️ Filipino Store'},
+  {id:'restaurant', label:'🍽️ Restaurant'},
+  {id:'legal', label:'⚖️ Legal/Immigration'},
+  {id:'church', label:'⛪ Church/Community'},
+  {id:'gov', label:'🏛️ Government Office'},
+  {id:'other', label:'📌 Other'}
+];
+const LANGUAGES = ['Tagalog','English','Korean','Bisaya','Ilocano'];
+
+// Basic bad-word filter (English + common Tagalog profanity). Soft deterrent only — not full moderation.
+const BAD_WORDS = [
+  'fuck','shit','bitch','asshole','bastard','cunt','dick','pussy','whore','slut',
+  'putang','putangina','tangina','gago','gagong','ulol','tarantado','leche','hayop ka',
+  'kupal','pakshet','peste','linta','bobo ka','tanga ka'
+];
+
+// NOTE: this PIN lives in plain text in the page source — anyone using "View Source"
+// or browser dev tools can read it. Treat this as a speed bump against casual misuse,
+// not real security. Change it before sharing this file publicly.
+const ADMIN_PIN = '2580';
+
+const SEED_DATA = [
+  {id:'s1', name:'Ansan Migrant Center Clinic', category:'clinic', city:'Ansan', address:'Wongok-dong, Danwon-gu', phone:'031-000-0000', langs:['English','Korean'], note:'Free or low-cost checkups for migrant workers, English-speaking staff available.', comments:[], featured:false, photos:[], ownerContact:'', verifiedBy:[]},
+  {id:'s2', name:'Manila Mart', category:'store', city:'Ansan', address:'Near Wongok Multicultural Street', phone:'', langs:['Tagalog','English'], note:'Filipino groceries, frozen goods, load and remittance counter.', comments:[], featured:false, photos:[], ownerContact:'', verifiedBy:[]},
+  {id:'s3', name:'Sto. Niño Filipino Catholic Mass', category:'church', city:'Hwaseong', address:'', phone:'', langs:['Tagalog'], note:'Tagalog mass every Sunday afternoon, community potluck after.', comments:[], featured:false, photos:[], ownerContact:'', verifiedBy:[]},
+  {id:'s4', name:'Daejeon Migrant Workers Support Center', category:'legal', city:'Daejeon', address:'', phone:'', langs:['English','Korean'], note:'Help with labor disputes, contract issues, and EPS questions.', comments:[], featured:false, photos:[], ownerContact:'', verifiedBy:[]}
+];
+
+/* ============================================================
+   SECTION B — APP STATE
+   ============================================================ */
+let allListings = [];
+let activeCategory = 'all';
+let activeCity = 'all';
+let searchTerm = '';
+let selectedLangs = new Set();
+let isUnlocked = false;
+let deviceId = '';
+
+const $ = (id) => document.getElementById(id);
+
+/* ============================================================
+   SECTION C — UTILITIES
+   ============================================================ */
+function showToast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+function catLabel(id){
+  const c = CATEGORIES.find(c=>c.id===id);
+  return c ? c.label : id;
+}
+
+function containsBadWords(text){
+  const lower = text.toLowerCase();
+  return BAD_WORDS.some(w => lower.includes(w));
+}
+
+function censorBadWords(text){
+  let result = text;
+  BAD_WORDS.forEach(w=>{
+    const re = new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi');
+    result = result.replace(re, m => m[0] + '*'.repeat(Math.max(m.length-1,1)));
+  });
+  return result;
+}
+
+// A simple per-browser ID so "Verified?" can't be spammed infinitely by the same person
+// clicking repeatedly. Not a real account system — just de-dupes obvious repeat clicks.
+function getDeviceId(){
+  let id = localStorage.getItem('kabayan-device-id');
+  if(!id){
+    id = 'd' + Date.now() + Math.random().toString(36).slice(2);
+    try{ localStorage.setItem('kabayan-device-id', id); }catch(e){}
+  }
+  return id;
+}
+
+/* ============================================================
+   SECTION D — DATA LAYER (load / save / backup)
+   ============================================================ */
+function showLoadingState(){
+  $('listings').innerHTML = `
+    <div class="loading-state">
+      ${[1,2,3].map(()=>`
+        <div class="skeleton-card">
+          <div class="skel-line w-30"></div>
+          <div class="skel-line w-70" style="margin-top:8px;"></div>
+          <div class="skel-line w-55"></div>
+          <div class="skel-line w-40"></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  $('resultsMeta').textContent = 'Loading directory...';
+}
+
+async function loadListings(){
+  showLoadingState();
+  try{
+    const res = await window.storage.get('kabayan-listings', true);
+    allListings = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
+    allListings = [];
+  }
+  if(allListings.length === 0){
+    allListings = SEED_DATA;
+    try{ await window.storage.set('kabayan-listings', JSON.stringify(allListings), true); }catch(e){}
+  }
+  // backfill fields for older saved data so nothing crashes on missing keys
+  allListings.forEach(l=>{
+    if(!l.comments) l.comments = [];
+    if(typeof l.featured !== 'boolean') l.featured = false;
+    if(!l.photos) l.photos = [];
+    if(typeof l.ownerContact !== 'string') l.ownerContact = '';
+    if(!l.verifiedBy) l.verifiedBy = [];
+  });
+  render();
+}
+
+async function saveListings(){
+  try{
+    await window.storage.set('kabayan-listings', JSON.stringify(allListings), true);
+  }catch(e){
+    showToast('Could not save online — changes are visible now but may not persist.');
+  }
+}
+
+function downloadJson(filename, dataObj){
+  const blob = new Blob([JSON.stringify(dataObj, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportBackup(){
+  const stamp = new Date().toISOString().slice(0,10);
+  downloadJson(`kabayan-directory-backup-${stamp}.json`, allListings);
+  showToast('Backup downloaded.');
+}
+
+async function importBackup(file){
+  try{
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    if(!Array.isArray(parsed)) throw new Error('not an array');
+    allListings = parsed;
+    await saveListings();
+    buildCityFilter();
+    render();
+    showToast('Backup restored successfully.');
+  }catch(e){
+    showToast('Could not read that file — make sure it is a valid backup .json');
+  }
+}
+
+/* ============================================================
+   SECTION E — FILTER / SELECT BUILDERS (run once on load)
+   ============================================================ */
+function buildCategoryFilters(){
+  const row = $('categoryFilters');
+  row.innerHTML = '';
+  const allChip = document.createElement('div');
+  allChip.className = 'chip active';
+  allChip.textContent = 'All';
+  allChip.onclick = () => { activeCategory='all'; refreshChipStates(); render(); };
+  row.appendChild(allChip);
+  CATEGORIES.forEach(c=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = c.label;
+    chip.dataset.cat = c.id;
+    chip.onclick = () => { activeCategory=c.id; refreshChipStates(); render(); };
+    row.appendChild(chip);
+  });
+  setupFilterScrollHint();
+}
+
+function setupFilterScrollHint(){
+  const row = $('categoryFilters');
+  const wrap = row.parentElement;
+  const updateHint = () => {
+    const hasOverflow = row.scrollWidth > row.clientWidth + 4;
+    const atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 4;
+    wrap.classList.toggle('has-overflow', hasOverflow && !atEnd);
+  };
+  row.addEventListener('scroll', updateHint);
+  window.addEventListener('resize', updateHint);
+  setTimeout(updateHint, 50);
+}
+
+function refreshChipStates(){
+  document.querySelectorAll('#categoryFilters .chip').forEach(chip=>{
+    const isAll = !chip.dataset.cat;
+    chip.classList.toggle('active', isAll ? activeCategory==='all' : chip.dataset.cat===activeCategory);
+  });
+}
+
+function buildCityFilter(){
+  const sel = $('cityFilter');
+  const cities = Array.from(new Set(allListings.map(l=>l.city))).sort();
+  sel.innerHTML = '<option value="all">All cities/areas</option>' +
+    cities.map(c=>`<option value="${c}">${c}</option>`).join('');
+  sel.onchange = () => { activeCity = sel.value; render(); };
+}
+
+function buildCategorySelect(){
+  const sel = $('f_category');
+  sel.innerHTML = CATEGORIES.map(c=>`<option value="${c.id}">${c.label}</option>`).join('');
+}
+
+function buildLangChecks(){
+  const row = $('langChecks');
+  row.innerHTML = LANGUAGES.map(l=>`<div class="lang-check" data-lang="${l}">${l}</div>`).join('');
+  row.querySelectorAll('.lang-check').forEach(el=>{
+    el.onclick = () => {
+      const lang = el.dataset.lang;
+      if(selectedLangs.has(lang)){ selectedLangs.delete(lang); el.classList.remove('checked'); }
+      else { selectedLangs.add(lang); el.classList.add('checked'); }
+    };
+  });
+}
+
+/* ============================================================
+   SECTION F — MAIN RENDER (listings + stats)
+   ============================================================ */
+function buildStats(){
+  const cities = new Set(allListings.map(l=>l.city)).size;
+  $('statsRow').innerHTML = `
+    <div class="stat-pill"><b>${allListings.length}</b> listings</div>
+    <div class="stat-pill"><b>${cities}</b> areas covered</div>
+    <div class="stat-pill"><b>${CATEGORIES.length}</b> categories</div>
+  `;
+}
+
+function render(){
+  buildStats();
+  const term = searchTerm.trim().toLowerCase();
+  const filtered = allListings.filter(l=>{
+    if(activeCategory!=='all' && l.category!==activeCategory) return false;
+    if(activeCity!=='all' && l.city!==activeCity) return false;
+    if(term){
+      const hay = `${l.name} ${l.city} ${l.address||''} ${l.note||''}`.toLowerCase();
+      if(!hay.includes(term)) return false;
+    }
+    return true;
+  });
+
+  // Featured listings always sort to top
+  filtered.sort((a,b)=>{
+    if(a.featured && !b.featured) return -1;
+    if(!a.featured && b.featured) return 1;
+    return 0;
+  });
+
+  $('resultsMeta').textContent = filtered.length === allListings.length
+    ? `Showing all (${filtered.length})`
+    : `${filtered.length} result(s)`;
+
+  const container = $('listings');
+  if(filtered.length === 0){
+    container.innerHTML = `<div class="empty-state"><div class="big">🔍</div>No results found.<br>Try a different category or city, or be the first to add one!</div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(l=>{
+    const verifiedCount = (l.verifiedBy||[]).length;
+    const iVerified = (l.verifiedBy||[]).includes(deviceId);
+    return `
+    <div class="card${l.featured ? ' is-featured' : ''}">
+      <div class="card-top">
+        <div>
+          <span class="card-cat">${catLabel(l.category)}</span>
+          ${l.featured ? `<span class="featured-badge">⭐ Trusted Partner</span>` : ''}
+          <h3 class="card-name">${escapeHtml(l.name)}</h3>
+        </div>
+      </div>
+      <div class="card-detail"><span class="ico">📍</span><span>${escapeHtml(l.city)}${l.address ? ' — ' + escapeHtml(l.address) : ''}</span></div>
+      ${l.phone ? `<div class="card-detail"><span class="ico">📞</span><span>${escapeHtml(l.phone)}</span></div>` : ''}
+      ${l.note ? `<div class="card-detail"><span class="ico">💬</span><span>${escapeHtml(l.note)}</span></div>` : ''}
+      <div class="card-langs">${(l.langs||[]).map(lg=>`<span class="lang-tag">${lg}</span>`).join('')}</div>
+      ${l.featured && (l.photos||[]).length ? `<div class="card-photos">${l.photos.map(p=>`<img src="${escapeHtml(p)}" alt="${escapeHtml(l.name)} photo">`).join('')}</div>` : ''}
+      <div class="card-actions">
+        ${l.phone ? `<a class="btn-sm btn-call" href="tel:${l.phone.replace(/[^0-9+]/g,'')}">Call</a>` : `<button class="btn-sm btn-call" disabled style="opacity:.5;">No number</button>`}
+        <button class="btn-sm btn-verify${iVerified ? ' verified-by-me' : ''}" onclick="confirmVerify('${l.id}')">${iVerified ? '✓ You verified' : 'Verified?'}</button>
+      </div>
+      ${verifiedCount > 0 ? `<div class="verify-count">Confirmed accurate by ${verifiedCount} ${verifiedCount===1?'person':'people'}</div>` : ''}
+      <button class="comments-toggle" onclick="toggleComments('${l.id}')">💬 ${(l.comments||[]).length === 0 ? 'Add a comment' : (l.comments||[]).length + ' comment' + ((l.comments||[]).length===1?'':'s')}</button>
+      <div class="comments-section" id="comments-${l.id}">
+        <div id="commentsList-${l.id}"></div>
+        <div class="comment-form">
+          <input type="text" class="comment-name" id="cname-${l.id}" placeholder="Your name (optional)">
+          <textarea class="comment-msg" id="ctext-${l.id}" placeholder="Share feedback, ask a question, or confirm this info..."></textarea>
+          <button onclick="addComment('${l.id}')">Post</button>
+        </div>
+      </div>
+    </div>
+  `;}).join('');
+}
+
+/* ============================================================
+   SECTION G — VERIFY ACTION
+   ============================================================ */
+async function confirmVerify(id){
+  const listing = allListings.find(l=>l.id===id);
+  if(!listing.verifiedBy) listing.verifiedBy = [];
+  const idx = listing.verifiedBy.indexOf(deviceId);
+  if(idx === -1){
+    listing.verifiedBy.push(deviceId);
+    showToast('Thanks for confirming this listing!');
+  }else{
+    listing.verifiedBy.splice(idx,1);
+    showToast('Verification removed.');
+  }
+  await saveListings();
+  render();
+}
+
+/* ============================================================
+   SECTION H — COMMENTS
+   ============================================================ */
+function renderComments(id){
+  const listing = allListings.find(l=>l.id===id);
+  const list = $('commentsList-'+id);
+  if(!list) return;
+  const comments = listing.comments || [];
+  if(comments.length === 0){
+    list.innerHTML = `<div class="comment-empty">No comments yet. Be the first to share feedback.</div>`;
+    return;
+  }
+  list.innerHTML = comments.map(c=>`
+    <div class="comment-item">
+      <div class="comment-author">${escapeHtml(c.author || 'Anonymous')}</div>
+      <div class="comment-text">${escapeHtml(c.text)}</div>
+      <div class="comment-time">${new Date(c.time).toLocaleDateString()}</div>
+      ${isUnlocked ? `<button class="comment-delete" onclick="deleteComment('${id}','${c.id}')">Delete</button>` : ''}
+    </div>
+  `).join('');
+}
+
+function toggleComments(id){
+  const section = $('comments-'+id);
+  const isOpen = section.classList.contains('open');
+  section.classList.toggle('open', !isOpen);
+  if(!isOpen) renderComments(id);
+}
+
+async function addComment(id){
+  const textEl = $('ctext-'+id);
+  const nameEl = $('cname-'+id);
+  let text = textEl.value.trim();
+  if(!text){
+    showToast('Write something before posting.');
+    return;
+  }
+  if(containsBadWords(text)){
+    text = censorBadWords(text);
+    showToast('Comment posted — inappropriate words were filtered.');
+  }else{
+    showToast('Comment posted.');
+  }
+  const listing = allListings.find(l=>l.id===id);
+  if(!listing.comments) listing.comments = [];
+  listing.comments.push({
+    id: 'c' + Date.now(),
+    author: nameEl.value.trim() || 'Anonymous',
+    text: text,
+    time: Date.now()
+  });
+  await saveListings();
+  textEl.value = '';
+  nameEl.value = '';
+  render();
+  setTimeout(()=>{
+    const section = $('comments-'+id);
+    if(section){ section.classList.add('open'); renderComments(id); }
+  }, 0);
+}
+
+async function deleteComment(listingId, commentId){
+  if(!isUnlocked){
+    showToast('Admin PIN required to delete comments.');
+    return;
+  }
+  const listing = allListings.find(l=>l.id===listingId);
+  listing.comments = (listing.comments||[]).filter(c=>c.id!==commentId);
+  await saveListings();
+  render();
+  setTimeout(()=>{
+    const section = $('comments-'+listingId);
+    if(section){ section.classList.add('open'); renderComments(listingId); }
+  }, 0);
+  showToast('Comment deleted.');
+}
+
+/* ============================================================
+   SECTION I — ADMIN: CRM / FEATURED / PHOTOS
+   ============================================================ */
+function renderCrm(){
+  if(!isUnlocked) return;
+  const list = $('crmList');
+  if(allListings.length === 0){
+    list.innerHTML = `<p class="form-note">No listings yet.</p>`;
+    return;
+  }
+  list.innerHTML = allListings.map(l=>`
+    <div class="crm-item">
+      <div class="crm-top">
+        <div class="crm-name">${escapeHtml(l.name)}</div>
+        <div class="crm-switch-label">${l.featured ? 'Featured' : 'Free'}</div>
+      </div>
+      <div class="crm-contact">📍 ${escapeHtml(l.city)} · ${catLabel(l.category)}</div>
+      <div class="crm-contact">Billing contact: ${l.ownerContact ? escapeHtml(l.ownerContact) : '<em>not set</em>'}</div>
+      <div class="crm-contact">Verified by ${(l.verifiedBy||[]).length} visitor(s)</div>
+      <div class="crm-toggle-row">
+        <div class="crm-switch ${l.featured ? 'on' : ''}" onclick="toggleFeatured('${l.id}')"></div>
+        <span class="crm-switch-label">Featured status</span>
+      </div>
+      <div class="crm-photo-input">
+        <input type="text" placeholder="Paste photo URL to add to gallery" id="photoInput-${l.id}">
+        <button class="btn-sm btn-call" style="margin-top:6px;width:100%;" onclick="addPhoto('${l.id}')">Add Photo</button>
+        ${(l.photos||[]).length ? `<div class="card-photos" style="margin-top:8px;">${l.photos.map((p,i)=>`<div style="position:relative;"><img src="${escapeHtml(p)}"><button onclick="removePhoto('${l.id}',${i})" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;">×</button></div>`).join('')}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function toggleFeatured(id){
+  const listing = allListings.find(l=>l.id===id);
+  listing.featured = !listing.featured;
+  await saveListings();
+  renderCrm();
+  render();
+  showToast(listing.featured ? `${listing.name} is now Featured.` : `${listing.name} downgraded to Free.`);
+}
+
+async function addPhoto(id){
+  const input = $('photoInput-'+id);
+  const url = input.value.trim();
+  if(!url) return;
+  const listing = allListings.find(l=>l.id===id);
+  if(!listing.photos) listing.photos = [];
+  listing.photos.push(url);
+  await saveListings();
+  input.value = '';
+  renderCrm();
+  render();
+}
+
+async function removePhoto(id, index){
+  const listing = allListings.find(l=>l.id===id);
+  listing.photos.splice(index,1);
+  await saveListings();
+  renderCrm();
+  render();
+}
+
+/* ============================================================
+   SECTION J — EVENT WIRING (runs once)
+   ============================================================ */
+$('searchInput').addEventListener('input', (e)=>{ searchTerm = e.target.value; render(); });
+
+$('toggleFormBtn').addEventListener('click', ()=>{
+  if(isUnlocked){
+    const panel = $('formPanel');
+    const isOpen = panel.style.display === 'block';
+    panel.style.display = isOpen ? 'none' : 'block';
+    $('toggleFormBtn').textContent = isOpen ? '+ Add a Listing (Admin Only)' : '✕ Close Form';
+    if(!isOpen) panel.scrollIntoView({behavior:'smooth', block:'start'});
+    return;
+  }
+  const pinPanel = $('pinPanel');
+  const isPinOpen = pinPanel.style.display === 'block';
+  pinPanel.style.display = isPinOpen ? 'none' : 'block';
+  if(!isPinOpen){
+    pinPanel.scrollIntoView({behavior:'smooth', block:'start'});
+    $('pinInput').focus();
+  }
+});
+
+$('pinSubmitBtn').addEventListener('click', ()=>{
+  const entered = $('pinInput').value.trim();
+  if(entered === ADMIN_PIN){
+    isUnlocked = true;
+    $('pinPanel').style.display = 'none';
+    $('pinInput').value = '';
+    $('pinError').style.display = 'none';
+    $('formPanel').style.display = 'block';
+    $('toggleFormBtn').textContent = '✕ Close Form';
+    $('toggleCrmBtn').style.display = 'block';
+    $('backupPanel').style.display = 'block';
+    $('formPanel').scrollIntoView({behavior:'smooth', block:'start'});
+    render();
+  }else{
+    $('pinError').style.display = 'block';
+  }
+});
+
+$('pinInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter'){ $('pinSubmitBtn').click(); }
+});
+
+$('toggleCrmBtn').addEventListener('click', ()=>{
+  const panel = $('crmPanel');
+  const isOpen = panel.style.display === 'block';
+  panel.style.display = isOpen ? 'none' : 'block';
+  $('toggleCrmBtn').textContent = isOpen ? '📋 Manage Featured / CRM' : '✕ Close CRM';
+  if(!isOpen){
+    renderCrm();
+    panel.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+});
+
+$('exportBtn').addEventListener('click', exportBackup);
+
+$('importTriggerBtn').addEventListener('click', ()=>{
+  $('importFileInput').click();
+});
+
+$('importFileInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(file) importBackup(file);
+  e.target.value = '';
+});
+
+$('addForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  if(selectedLangs.size === 0){
+    showToast('Please select at least one language.');
+    return;
+  }
+  const newListing = {
+    id: 'l' + Date.now(),
+    name: $('f_name').value.trim(),
+    category: $('f_category').value,
+    city: $('f_city').value.trim(),
+    address: $('f_address').value.trim(),
+    phone: $('f_phone').value.trim(),
+    langs: Array.from(selectedLangs),
+    note: $('f_note').value.trim(),
+    comments: [],
+    featured: false,
+    photos: [],
+    ownerContact: $('f_ownerContact').value.trim(),
+    verifiedBy: []
+  };
+  allListings.unshift(newListing);
+  await saveListings();
+  buildCityFilter();
+  render();
+  e.target.reset();
+  selectedLangs.clear();
+  document.querySelectorAll('.lang-check').forEach(el=>el.classList.remove('checked'));
+  $('formPanel').style.display = 'none';
+  $('toggleFormBtn').textContent = '+ Add a Listing (Admin Only)';
+  showToast('Thanks! Your listing has been added.');
+});
+
+/* ============================================================
+   SECTION K — INIT
+   ============================================================ */
+deviceId = getDeviceId();
+buildCategoryFilters();
+buildCategorySelect();
+buildLangChecks();
+loadListings().then(buildCityFilter);
+</script>
+</body>
+</html>
